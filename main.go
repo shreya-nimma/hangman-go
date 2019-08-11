@@ -10,36 +10,41 @@ import (
 )
 
 var correctly_guessed int
+var incorrectly_guessed int
+var word string
 
 func empty_slice(guess []byte) {
-	for i := 0; i < len(guess); i++ {
+	for i, _ := range guess {
 		guess[i] = '_'
 	}
 }
 
 func print_hangman(guess []byte) {
-	for i := 0; i < len(guess); i++ {
-		fmt.Printf("%c ", guess[i])
+	fmt.Printf(">> ")
+	for _, c := range guess {
+		fmt.Printf("%c ", c)
 	}
 	fmt.Printf("\n")
 }
 
-func update_guess(guess []byte, letter string, word string) []byte {
-	fmt.Println(guess)
-	fmt.Println(letter)
-	fmt.Println(word)
+func update_guess(guess []byte, letter string){
 	// Check if letter has been guessed before.
-
-	if strings.Contains(word, letter) {
-		for i := 0; i <= len(word); i++ {
+	index := strings.Index(word, letter)
+	if index != -1 {
+		for i := index; i < len(word); i++ {
+			// If letter has already been guessed.
+			if word[i] == guess[i] {
+				break
+			}
 			if word[i] == letter[0] {
 				guess[i] = letter[0]
 				correctly_guessed++
 			}
 		}
+	} else {
+		incorrectly_guessed++
+		fmt.Println("Letter not found.")
 	}
-
-	return guess
 }
 
 func main() {
@@ -69,16 +74,18 @@ func main() {
 
 	// Selecting a word.
 	rand_index := rand.Intn(len(words))
-	word := words[rand_index]
-	fmt.Println("The word is: ", word)
+	word = words[rand_index]
+	// word = words[0]
+	word = word[:len(word) - 1]
 
+	// Setting up the game.
 	correctly_guessed = 0
+	incorrectly_guessed = 0
+
 	guess_slice := []byte(word)
 	empty_slice(guess_slice)
-	return
 
 	for {
-		fmt.Println("The word is: ")
 		print_hangman(guess_slice)
 
 		if correctly_guessed == len(word) {
@@ -89,12 +96,11 @@ func main() {
 		letter, _ := reader.ReadString('\n')
 
 		// Checking if input is valid.
-		if len(letter) > 2 {
-			// fmt.Println(">> Enter only one letter. Try again.")
+		if len(letter) > 3 {
 			continue
 		} 
 
 		// Check if the letter exists in the word now
-		guess_slice = update_guess(guess_slice, letter[:1], word)
+		update_guess(guess_slice, letter[:1])
 	}
 }
