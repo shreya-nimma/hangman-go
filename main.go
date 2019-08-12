@@ -20,6 +20,7 @@ func empty_slice(guess []byte) {
 }
 
 func print_hangman(guess []byte) {
+	fmt.Println(hangman_art[incorrectly_guessed])
 	fmt.Printf(">> ")
 	for _, c := range guess {
 		fmt.Printf("%c ", c)
@@ -89,6 +90,11 @@ func main() {
 		print_hangman(guess_slice)
 
 		if correctly_guessed == len(word) {
+			break
+		}
+
+		if incorrectly_guessed == 5 {
+			fmt.Printf(">> Boohoo, game over!")
 			break
 		}
 
